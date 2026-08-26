@@ -1,0 +1,14 @@
+{
+  "title": "Ruleta del Hiperfoco",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurar Ruleta del Hiperfoco",
+        "description": "Crea tu selector contextual de próximas tareas."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Solo puede configurarse una instancia de Ruleta del Hiperfoco."
+    }
+  }
+}

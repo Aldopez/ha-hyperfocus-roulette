@@ -1,0 +1,11 @@
+{
+  "domain": "hyperfocus_roulette",
+  "name": "Hyperfocus Roulette",
+  "codeowners": ["@aldopez"],
+  "config_flow": true,
+  "documentation": "https://github.com/aldopez/ha-hyperfocus-roulette",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "requirements": [],
+  "version": "0.1.0"
+}
