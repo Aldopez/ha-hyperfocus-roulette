@@ -63,7 +63,7 @@ ha core restart
 - [x] Agregar traducción al español.
 - [x] Crear un dispositivo virtual.
 - [x] Normalizar nombres de entidades.
-- [ ] Agregar pruebas básicas.
+- [x] Agregar pruebas básicas.
 
 ### 0.2 — Primera ruleta funcional
 
