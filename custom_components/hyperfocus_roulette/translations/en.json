@@ -1,0 +1,29 @@
+{
+  "title": "Hyperfocus Roulette",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Hyperfocus Roulette",
+        "description": "Create your contextual task selector."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only one Hyperfocus Roulette instance can be configured."
+    }
+  },
+  "entity": {
+    "button": {
+      "draw": {
+        "name": "Draw"
+      }
+    },
+    "sensor": {
+      "current_task": {
+        "name": "Current task",
+        "state": {
+          "none": "No task selected"
+        }
+      }
+    }
+  }
+}

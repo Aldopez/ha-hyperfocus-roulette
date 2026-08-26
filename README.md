@@ -62,16 +62,16 @@ ha core restart
 - [x] Crear un sensor con estado `ready`.
 - [x] Agregar traducción al español.
 - [x] Crear un dispositivo virtual.
-- [ ] Normalizar nombres de entidades.
+- [x] Normalizar nombres de entidades.
 - [ ] Agregar pruebas básicas.
 
 ### 0.2 — Primera ruleta funcional
 
-- [ ] Crear `HyperfocusManager`.
-- [ ] Definir tres tareas temporales.
-- [ ] Crear el botón **Sortear**.
-- [ ] Mostrar la tarea seleccionada.
-- [ ] Evitar repeticiones inmediatas.
+- [x] Crear `HyperfocusManager`.
+- [x] Definir tres tareas temporales.
+- [x] Crear el botón **Sortear**.
+- [x] Mostrar la tarea seleccionada.
+- [x] Evitar repeticiones inmediatas.
 - [ ] Disparar un evento al seleccionar una tarea.
 
 ### 0.3 — Ciclo de una tarea
