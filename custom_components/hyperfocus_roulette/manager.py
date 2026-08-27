@@ -22,6 +22,8 @@ class TaskStatus(StrEnum):
 class NoAvailableTasksError(Exception):
     """Raised when the roulette has no available tasks."""
 
+class InvalidTaskTransitionError(Exception):
+    """Raised when an action is invalid for the current task state."""
 
 @dataclass(slots=True)
 class HyperfocusTask:
@@ -101,6 +103,56 @@ class HyperfocusManager:
         self._notify_listeners()
 
         return self.current_task
+
+    def accept(self) -> HyperfocusTask:
+        """Accept the currently proposed task."""
+
+        task = self._require_current_task(TaskStatus.PROPOSED)
+
+        task.status = TaskStatus.ACTIVE
+        task.omission_count = 0
+
+        self._notify_listeners()
+
+        return task
+
+    def skip(self) -> HyperfocusTask:
+        """Skip the current proposal and draw another task."""
+
+        skipped_task = self._require_current_task(TaskStatus.PROPOSED)
+
+        skipped_task.omission_count += 1
+
+        if skipped_task.omission_count >= MAX_OMISSIONS:
+            skipped_task.status = TaskStatus.BLOCKED
+        else:
+            skipped_task.status = TaskStatus.AVAILABLE
+
+        return self.draw()
+
+    def complete(self) -> HyperfocusTask:
+        """Complete the currently active task."""
+
+        task = self._require_current_task(TaskStatus.ACTIVE)
+
+        task.status = TaskStatus.FINISHED
+
+        self._notify_listeners()
+
+        return task
+
+    def _require_current_task(
+        self,
+        required_status: TaskStatus,
+    ) -> HyperfocusTask:
+        """Return the current task if it has the required status."""
+
+        task = self.current_task
+
+        if task is None or task.status is not required_status:
+            raise InvalidTaskTransitionError
+
+        return task
 
     def add_listener(self, listener: Callable[[], None]) -> Callable[[], None]:
         """Register a listener and return its unsubscribe callback."""

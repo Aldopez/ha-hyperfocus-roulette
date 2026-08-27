@@ -5,6 +5,7 @@ from custom_components.hyperfocus_roulette.manager import (
     TaskStatus,
 )
 
+
 def test_draw_selects_known_task() -> None:
     """Test that drawing selects one of the available tasks."""
 
@@ -60,3 +61,43 @@ def test_listener_can_be_removed() -> None:
     manager.draw()
 
     assert len(notifications) == 1
+
+def test_accept_activates_current_task() -> None:
+    """Test that accepting activates the proposed task."""
+
+    manager = HyperfocusManager()
+    proposed_task = manager.draw()
+
+    accepted_task = manager.accept()
+
+    assert accepted_task is proposed_task
+    assert accepted_task.status is TaskStatus.ACTIVE
+    assert accepted_task.omission_count == 0
+
+
+def test_skip_records_omission_and_draws_another_task() -> None:
+    """Test that skipping records an omission and draws another task."""
+
+    manager = HyperfocusManager()
+    skipped_task = manager.draw()
+
+    next_task = manager.skip()
+
+    assert skipped_task.status is TaskStatus.AVAILABLE
+    assert skipped_task.omission_count == 1
+    assert next_task is manager.current_task
+    assert next_task is not skipped_task
+    assert next_task.status is TaskStatus.PROPOSED
+
+
+def test_complete_finishes_active_task() -> None:
+    """Test that completing finishes the active task."""
+
+    manager = HyperfocusManager()
+    manager.draw()
+    active_task = manager.accept()
+
+    completed_task = manager.complete()
+
+    assert completed_task is active_task
+    assert completed_task.status is TaskStatus.FINISHED
