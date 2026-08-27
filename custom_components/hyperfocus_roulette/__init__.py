@@ -4,7 +4,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 
 from .const import EVENT_TASK_SELECTED, PLATFORMS
-from .manager import HyperfocusManager
+from .manager import HyperfocusManager, TaskStatus
 
 
 async def async_setup_entry(
@@ -22,7 +22,7 @@ async def async_setup_entry(
 
         task = manager.current_task
 
-        if task is None:
+        if task is None or task.status is not TaskStatus.PROPOSED:
             return
 
         hass.bus.async_fire(

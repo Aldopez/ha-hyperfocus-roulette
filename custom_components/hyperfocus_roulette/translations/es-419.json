@@ -15,6 +15,15 @@
     "button": {
       "draw": {
         "name": "Sortear"
+      },
+      "accept": {
+        "name": "Aceptar"
+      },
+      "skip": {
+        "name": "Omitir"
+      },
+      "complete": {
+        "name": "Completar"
       }
     },
     "sensor": {

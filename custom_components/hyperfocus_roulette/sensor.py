@@ -59,12 +59,14 @@ class HyperfocusCurrentTaskSensor(SensorEntity):
 
         if task is None:
             return {}
-
+        
         return {
             "task_id": task.task_id,
             "project": task.project,
             "duration": task.duration,
-        }
+            "status": task.status,
+            "omission_count": task.omission_count,
+        }        
 
     async def async_added_to_hass(self) -> None:
         """Register for manager updates."""

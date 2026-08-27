@@ -15,6 +15,15 @@
     "button": {
       "draw": {
         "name": "Draw"
+      },
+      "accept": {
+        "name": "Accept"
+      },
+      "skip": {
+        "name": "Skip"
+      },
+      "complete": {
+        "name": "Complete"
       }
     },
     "sensor": {
