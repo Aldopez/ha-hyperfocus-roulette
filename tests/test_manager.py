@@ -1,7 +1,9 @@
 """Tests for the Hyperfocus Roulette manager."""
 
-from custom_components.hyperfocus_roulette.manager import HyperfocusManager
-
+from custom_components.hyperfocus_roulette.manager import (
+    HyperfocusManager,
+    TaskStatus,
+)
 
 def test_draw_selects_known_task() -> None:
     """Test that drawing selects one of the available tasks."""
@@ -12,6 +14,7 @@ def test_draw_selects_known_task() -> None:
 
     assert selected_task in manager.tasks
     assert manager.current_task is selected_task
+    assert selected_task.status is TaskStatus.PROPOSED
 
 
 def test_draw_does_not_repeat_current_task() -> None:
