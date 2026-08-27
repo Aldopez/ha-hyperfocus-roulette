@@ -1,10 +1,11 @@
 """The Hyperfocus Roulette integration."""
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 
-from .const import PLATFORMS
+from .const import EVENT_TASK_SELECTED, PLATFORMS
 from .manager import HyperfocusManager
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -12,8 +13,32 @@ async def async_setup_entry(
 ) -> bool:
     """Set up Hyperfocus Roulette from a config entry."""
 
-    entry.runtime_data = HyperfocusManager()
-    
+    manager = HyperfocusManager()
+    entry.runtime_data = manager
+
+    @callback
+    def handle_manager_update() -> None:
+        """Fire an event when a task is selected."""
+
+        task = manager.current_task
+
+        if task is None:
+            return
+
+        hass.bus.async_fire(
+            EVENT_TASK_SELECTED,
+            {
+                "task_id": task.task_id,
+                "title": task.title,
+                "project": task.project,
+                "duration": task.duration,
+            },
+        )
+
+    entry.async_on_unload(
+        manager.add_listener(handle_manager_update)
+    )
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True

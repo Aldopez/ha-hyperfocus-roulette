@@ -72,7 +72,7 @@ ha core restart
 - [x] Crear el botón **Sortear**.
 - [x] Mostrar la tarea seleccionada.
 - [x] Evitar repeticiones inmediatas.
-- [ ] Disparar un evento al seleccionar una tarea.
+- [x] Disparar un evento al seleccionar una tarea.
 
 ### 0.3 — Ciclo de una tarea
 
