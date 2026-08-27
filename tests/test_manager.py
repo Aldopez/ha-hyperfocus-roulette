@@ -100,4 +100,25 @@ def test_complete_finishes_active_task() -> None:
     completed_task = manager.complete()
 
     assert completed_task is active_task
-    assert completed_task.status is TaskStatus.FINISHED
+    assert completed_task.status is TaskStatus.FINISHED}
+
+def test_three_omissions_block_last_available_task() -> None:
+    """Test that three omissions block a task without raising an error."""
+
+    manager = HyperfocusManager()
+    task = manager.tasks[0]
+    manager.tasks = [task]
+
+    for _ in range(2):
+        manager.draw()
+        next_task = manager.skip()
+
+        assert next_task is task
+        assert task.status is TaskStatus.PROPOSED
+
+    result = manager.skip()
+
+    assert result is None
+    assert task.status is TaskStatus.BLOCKED
+    assert task.omission_count == 3
+    assert manager.current_task is None

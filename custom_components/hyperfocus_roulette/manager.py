@@ -116,7 +116,7 @@ class HyperfocusManager:
 
         return task
 
-    def skip(self) -> HyperfocusTask:
+    def skip(self) -> HyperfocusTask | None:
         """Skip the current proposal and draw another task."""
 
         skipped_task = self._require_current_task(TaskStatus.PROPOSED)
@@ -128,7 +128,10 @@ class HyperfocusManager:
         else:
             skipped_task.status = TaskStatus.AVAILABLE
 
-        return self.draw()
+        try:
+            return self.draw()
+        except NoAvailableTasksError:
+            return None
 
     def complete(self) -> HyperfocusTask:
         """Complete the currently active task."""
