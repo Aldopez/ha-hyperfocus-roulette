@@ -1,2 +1,2 @@
-pytest
+pytest>=8,<9
 pytest-homeassistant-custom-component>=0.13.326,<0.14
