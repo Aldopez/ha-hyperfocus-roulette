@@ -3,8 +3,16 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 
-from .const import EVENT_TASK_SELECTED, PLATFORMS
-from .manager import HyperfocusManager, TaskStatus
+from .const import (
+    EVENT_TASK_ACTION,
+    EVENT_TASK_SELECTED,
+    PLATFORMS,
+)
+from .manager import (
+    HyperfocusManager,
+    TaskActionResult,
+    TaskStatus,
+)
 
 
 async def async_setup_entry(
@@ -35,8 +43,28 @@ async def async_setup_entry(
             },
         )
 
+    @callback
+    def handle_task_action(result: TaskActionResult) -> None:
+        """Fire an event when a task action is recorded."""
+
+        hass.bus.async_fire(
+            EVENT_TASK_ACTION,
+            {
+                "action": result.action.value,
+                "task_id": result.task_id,
+                "title": result.title,
+                "project": result.project,
+                "duration": result.duration,
+                "status": result.status.value,
+                "omission_count": result.omission_count,
+            },
+        )
+
     entry.async_on_unload(
         manager.add_listener(handle_manager_update)
+    )
+    entry.async_on_unload(
+        manager.add_action_listener(handle_task_action)
     )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

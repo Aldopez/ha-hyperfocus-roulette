@@ -89,6 +89,9 @@ class HyperfocusManager:
 
         self.current_task: HyperfocusTask | None = None
         self.action_history: list[TaskActionResult] = []
+        self._action_listeners: set[
+            Callable[[TaskActionResult], None]
+        ] = set()
         self._listeners: set[Callable[[], None]] = set()
 
     @property
@@ -208,6 +211,7 @@ class HyperfocusManager:
         )
 
         self.action_history.append(result)
+        self._notify_action_listeners(result)
 
         return result
 
@@ -224,6 +228,19 @@ class HyperfocusManager:
 
         return task
 
+    def add_action_listener(
+        self,
+        listener: Callable[[TaskActionResult], None],
+    ) -> Callable[[], None]:
+        """Register a listener for recorded task actions."""
+
+        self._action_listeners.add(listener)
+
+        def remove_listener() -> None:
+            self._action_listeners.discard(listener)
+
+        return remove_listener
+
     def add_listener(self, listener: Callable[[], None]) -> Callable[[], None]:
         """Register a listener and return its unsubscribe callback."""
 
@@ -233,6 +250,15 @@ class HyperfocusManager:
             self._listeners.discard(listener)
 
         return remove_listener
+
+    def _notify_action_listeners(
+        self,
+        result: TaskActionResult,
+    ) -> None:
+        """Notify listeners that a task action was recorded."""
+
+        for listener in self._action_listeners:
+            listener(result)
 
     def _notify_listeners(self) -> None:
         """Notify listeners that the state changed."""

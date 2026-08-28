@@ -4,7 +4,7 @@ Integración personalizada para Home Assistant que selecciona una próxima tarea
 
 La idea nació como una automatización innecesaria y rápidamente se convirtió en otro proyecto del backlog.
 
-> Estado: desarrollo experimental.
+> Estado: desarrollo experimental — versión 0.3 en progreso.
 
 ## Objetivo
 
@@ -16,17 +16,26 @@ Ejemplo:
 > Dibujar únicamente la conexión entre el ESP-01, el BC548 y `PWR_SW`.  
 > Tiempo estimado: 20 minutos.
 
-La integración permitirá aceptar, omitir, completar o bloquear la tarea seleccionada.
+La integración permite sortear, aceptar, omitir y completar una tarea. Una tarea se bloquea automáticamente después de tres omisiones consecutivas.
 
 ## Estado actual
 
 - Configuración desde la interfaz de Home Assistant.
 - Una única instancia.
 - Dispositivo virtual para agrupar entidades.
-- Sensor de estado con valor `ready`.
-- Traducción inicial al español.
+- Tres tareas temporales almacenadas en memoria.
+- Botones **Sortear**, **Aceptar**, **Omitir** y **Completar**.
+- Sensor que muestra la tarea actual, su estado y cantidad de omisiones.
+- Estados disponible, propuesta, activa, bloqueada y terminada.
+- Bloqueo automático después de tres omisiones consecutivas.
+- Exclusión de tareas bloqueadas y terminadas.
+- Detección de que no quedan tareas disponibles.
+- Registro temporal de los resultados de las acciones.
+- Evento `hyperfocus_roulette_task_selected` al presentar una propuesta.
+- Traducciones en inglés, español y español latinoamericano.
+- Diez pruebas automáticas ejecutadas mediante GitHub Actions.
 
-Todavía no implementa tareas ni realiza sorteos.
+Los datos todavía se almacenan únicamente en memoria y se reinician al recargar Home Assistant.
 
 ## Instalación para desarrollo
 
@@ -72,14 +81,18 @@ ha core restart
 - [x] Crear el botón **Sortear**.
 - [x] Mostrar la tarea seleccionada.
 - [x] Evitar repeticiones inmediatas.
-- [x] Disparar un evento al seleccionar una tarea.
+- [x] Disparar el evento `hyperfocus_roulette_task_selected`.
 
 ### 0.3 — Ciclo de una tarea
 
 - [x] Crear los botones **Aceptar**, **Omitir** y **Completar**.
-- [x] Agregar estados: propuesta, activa, bloqueada y terminada.
+- [x] Agregar estados: disponible, propuesta, activa, bloqueada y terminada.
+- [x] Registrar omisiones consecutivas.
+- [x] Bloquear una tarea después de tres omisiones.
+- [x] Excluir tareas bloqueadas y terminadas de los sorteos.
+- [x] Informar cuando no quedan tareas disponibles.
 - [x] Registrar el resultado de cada acción.
-- [ ] Disparar eventos para automatizaciones.
+- [ ] Disparar el evento `hyperfocus_roulette_task_action`.
 
 ### 0.4 — Persistencia
 
@@ -96,7 +109,6 @@ ha core restart
 - [ ] Filtrar por ubicación.
 - [ ] Agregar modos **Avanzar** y **Estoy aburrido**.
 - [ ] Implementar prioridades.
-- [ ] Excluir tareas bloqueadas.
 
 ### 0.6 — Interfaz y distribución
 
