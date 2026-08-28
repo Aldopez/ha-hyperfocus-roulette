@@ -62,6 +62,7 @@ def test_listener_can_be_removed() -> None:
 
     assert len(notifications) == 1
 
+
 def test_accept_activates_current_task() -> None:
     """Test that accepting activates the proposed task."""
 
@@ -100,7 +101,8 @@ def test_complete_finishes_active_task() -> None:
     completed_task = manager.complete()
 
     assert completed_task is active_task
-    assert completed_task.status is TaskStatus.FINISHED}
+    assert completed_task.status is TaskStatus.FINISHED
+
 
 def test_three_omissions_block_last_available_task() -> None:
     """Test that three omissions block a task without raising an error."""
