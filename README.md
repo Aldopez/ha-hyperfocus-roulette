@@ -96,8 +96,8 @@ ha core restart
 
 ### 0.4 — Persistencia
 
-- [ ] Crear modelos separados para proyectos y tareas.
-- [ ] Asignar identificadores estables a los proyectos.
+- [x] Crear modelos separados para proyectos y tareas.
+- [x] Asignar identificadores estables a los proyectos y las tareas.
 - [ ] Serializar proyectos, tareas, estado e historial.
 - [ ] Guardar los datos mediante `Store`.
 - [ ] Restaurar los datos después de reiniciar.
