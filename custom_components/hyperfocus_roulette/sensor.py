@@ -47,7 +47,10 @@ class HyperfocusCurrentTaskSensor(SensorEntity):
         """Return the current task title."""
 
         if self._manager.current_task is None:
-            return "none"
+            if self._manager.has_available_tasks:
+                return "none"
+
+            return "no_tasks"
 
         return self._manager.current_task.title
 
@@ -59,7 +62,7 @@ class HyperfocusCurrentTaskSensor(SensorEntity):
 
         if task is None:
             return {}
-        
+
         return {
             "task_id": task.task_id,
             "project": task.project,

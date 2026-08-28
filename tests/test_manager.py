@@ -11,6 +11,8 @@ def test_draw_selects_known_task() -> None:
 
     manager = HyperfocusManager()
 
+    assert manager.has_available_tasks
+
     selected_task = manager.draw()
 
     assert selected_task in manager.tasks
@@ -124,3 +126,4 @@ def test_three_omissions_block_last_available_task() -> None:
     assert task.status is TaskStatus.BLOCKED
     assert task.omission_count == 3
     assert manager.current_task is None
+    assert not manager.has_available_tasks

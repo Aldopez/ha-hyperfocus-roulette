@@ -30,7 +30,8 @@
       "current_task": {
         "name": "Current task",
         "state": {
-          "none": "No task selected"
+          "none": "No task selected",
+          "no_tasks": "No tasks available"
         }
       }
     }

@@ -22,8 +22,10 @@ class TaskStatus(StrEnum):
 class NoAvailableTasksError(Exception):
     """Raised when the roulette has no available tasks."""
 
+
 class InvalidTaskTransitionError(Exception):
     """Raised when an action is invalid for the current task state."""
+
 
 @dataclass(slots=True)
 class HyperfocusTask:
@@ -66,6 +68,15 @@ class HyperfocusManager:
 
         self.current_task: HyperfocusTask | None = None
         self._listeners: set[Callable[[], None]] = set()
+
+    @property
+    def has_available_tasks(self) -> bool:
+        """Return whether at least one task is available."""
+
+        return any(
+            task.status is TaskStatus.AVAILABLE
+            for task in self.tasks
+        )
 
     def draw(self) -> HyperfocusTask:
         """Select an available task without immediately repeating one."""

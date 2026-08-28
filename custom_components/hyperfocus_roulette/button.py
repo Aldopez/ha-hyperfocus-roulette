@@ -81,10 +81,7 @@ class HyperfocusDrawButton(HyperfocusButton):
         """Return whether drawing is currently allowed."""
 
         current_task = self._manager.current_task
-        has_available_tasks = any(
-            task.status is TaskStatus.AVAILABLE
-            for task in self._manager.tasks
-        )
+        has_available_tasks = self._manager.has_available_tasks
 
         return has_available_tasks and (
             current_task is None
