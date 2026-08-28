@@ -4,7 +4,7 @@ Integración personalizada para Home Assistant que selecciona una próxima tarea
 
 La idea nació como una automatización innecesaria y rápidamente se convirtió en otro proyecto del backlog.
 
-> Estado: desarrollo experimental — versión 0.3 en progreso.
+> Estado: desarrollo experimental — versión 0.3 completada.
 
 ## Objetivo
 
@@ -92,7 +92,7 @@ ha core restart
 - [x] Excluir tareas bloqueadas y terminadas de los sorteos.
 - [x] Informar cuando no quedan tareas disponibles.
 - [x] Registrar el resultado de cada acción.
-- [ ] Disparar el evento `hyperfocus_roulette_task_action`.
+- [x] Disparar el evento `hyperfocus_roulette_task_action`.
 
 ### 0.4 — Persistencia
 
