@@ -33,7 +33,7 @@ La integración permite sortear, aceptar, omitir y completar una tarea. Una tare
 - Registro temporal de los resultados de las acciones.
 - Evento `hyperfocus_roulette_task_selected` al presentar una propuesta.
 - Traducciones en inglés, español y español latinoamericano.
-- Diez pruebas automáticas ejecutadas mediante GitHub Actions.
+- Pruebas automáticas ejecutadas mediante GitHub Actions.
 
 Los datos todavía se almacenan únicamente en memoria y se reinician al recargar Home Assistant.
 
@@ -96,11 +96,17 @@ ha core restart
 
 ### 0.4 — Persistencia
 
-- [ ] Guardar proyectos y tareas.
-- [ ] Restaurar el estado después de reiniciar.
+- [ ] Crear modelos separados para proyectos y tareas.
+- [ ] Asignar identificadores estables a los proyectos.
+- [ ] Serializar proyectos, tareas, estado e historial.
+- [ ] Guardar los datos mediante `Store`.
+- [ ] Restaurar los datos después de reiniciar.
+- [ ] Crear los datos iniciales solamente en la primera instalación.
+- [ ] Guardar automáticamente después de cada acción.
 - [ ] Permitir administrar proyectos.
 - [ ] Permitir administrar tareas.
 - [ ] Implementar migraciones de datos.
+- [ ] Agregar pruebas de persistencia y restauración.
 
 ### 0.5 — Selección contextual
 

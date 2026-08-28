@@ -63,9 +63,12 @@ class HyperfocusCurrentTaskSensor(SensorEntity):
         if task is None:
             return {}
 
+        project = self._manager.get_project(task.project_id)
+
         return {
             "task_id": task.task_id,
-            "project": task.project,
+            "project_id": task.project_id,
+            "project": project.name,
             "duration": task.duration,
             "status": task.status,
             "omission_count": task.omission_count,

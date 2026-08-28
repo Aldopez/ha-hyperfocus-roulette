@@ -35,6 +35,7 @@ async def test_draw_fires_task_selected_event(
 
     manager: HyperfocusManager = entry.runtime_data
     selected_task = manager.draw()
+    project = manager.get_project(selected_task.project_id)
 
     await hass.async_block_till_done()
 
@@ -46,7 +47,8 @@ async def test_draw_fires_task_selected_event(
     assert event.data == {
         "task_id": selected_task.task_id,
         "title": selected_task.title,
-        "project": selected_task.project,
+        "project_id": selected_task.project_id,
+        "project": project.name,
         "duration": selected_task.duration,
     }
 
@@ -71,6 +73,7 @@ async def test_accept_fires_task_action_event(
 
     manager: HyperfocusManager = entry.runtime_data
     selected_task = manager.draw()
+    project = manager.get_project(selected_task.project_id)
     manager.accept()
 
     await hass.async_block_till_done()
@@ -84,7 +87,8 @@ async def test_accept_fires_task_action_event(
         "action": TaskAction.ACCEPTED.value,
         "task_id": selected_task.task_id,
         "title": selected_task.title,
-        "project": selected_task.project,
+        "project_id": selected_task.project_id,
+        "project": project.name,
         "duration": selected_task.duration,
         "status": TaskStatus.ACTIVE.value,
         "omission_count": 0,

@@ -33,12 +33,15 @@ async def async_setup_entry(
         if task is None or task.status is not TaskStatus.PROPOSED:
             return
 
+        project = manager.get_project(task.project_id)
+
         hass.bus.async_fire(
             EVENT_TASK_SELECTED,
             {
                 "task_id": task.task_id,
+                "project_id": task.project_id,
                 "title": task.title,
-                "project": task.project,
+                "project": project.name,
                 "duration": task.duration,
             },
         )
@@ -52,6 +55,7 @@ async def async_setup_entry(
             {
                 "action": result.action.value,
                 "task_id": result.task_id,
+                "project_id": result.project_id,
                 "title": result.title,
                 "project": result.project,
                 "duration": result.duration,

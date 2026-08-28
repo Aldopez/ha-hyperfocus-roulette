@@ -17,6 +17,7 @@ def test_draw_selects_known_task() -> None:
     selected_task = manager.draw()
 
     assert selected_task in manager.tasks
+    assert selected_task.project_id in manager.projects
     assert manager.current_task is selected_task
     assert selected_task.status is TaskStatus.PROPOSED
 
@@ -164,3 +165,4 @@ def test_task_actions_are_recorded() -> None:
     assert completed_result.task_id == active_task.task_id
     assert completed_result.status is TaskStatus.FINISHED
     assert manager.last_action is completed_result
+    assert skipped_result.project_id == skipped_task.project_id
