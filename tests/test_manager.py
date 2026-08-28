@@ -2,6 +2,7 @@
 
 from custom_components.hyperfocus_roulette.manager import (
     HyperfocusManager,
+    TaskAction,
     TaskStatus,
 )
 
@@ -127,3 +128,39 @@ def test_three_omissions_block_last_available_task() -> None:
     assert task.omission_count == 3
     assert manager.current_task is None
     assert not manager.has_available_tasks
+
+
+def test_task_actions_are_recorded() -> None:
+    """Test that task actions are recorded in order."""
+
+    manager = HyperfocusManager()
+
+    skipped_task = manager.draw()
+    manager.skip()
+
+    active_task = manager.accept()
+    manager.complete()
+
+    assert [
+        result.action
+        for result in manager.action_history
+    ] == [
+        TaskAction.SKIPPED,
+        TaskAction.ACCEPTED,
+        TaskAction.COMPLETED,
+    ]
+
+    skipped_result = manager.action_history[0]
+    accepted_result = manager.action_history[1]
+    completed_result = manager.action_history[2]
+
+    assert skipped_result.task_id == skipped_task.task_id
+    assert skipped_result.status is TaskStatus.AVAILABLE
+    assert skipped_result.omission_count == 1
+
+    assert accepted_result.task_id == active_task.task_id
+    assert accepted_result.status is TaskStatus.ACTIVE
+
+    assert completed_result.task_id == active_task.task_id
+    assert completed_result.status is TaskStatus.FINISHED
+    assert manager.last_action is completed_result

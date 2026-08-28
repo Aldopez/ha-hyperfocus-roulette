@@ -19,6 +19,14 @@ class TaskStatus(StrEnum):
     FINISHED = "finished"
 
 
+class TaskAction(StrEnum):
+    """Actions that can be performed on a task."""
+
+    ACCEPTED = "accepted"
+    SKIPPED = "skipped"
+    COMPLETED = "completed"
+
+
 class NoAvailableTasksError(Exception):
     """Raised when the roulette has no available tasks."""
 
@@ -37,6 +45,19 @@ class HyperfocusTask:
     duration: int
     status: TaskStatus = TaskStatus.AVAILABLE
     omission_count: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class TaskActionResult:
+    """Represent the recorded result of a task action."""
+
+    action: TaskAction
+    task_id: str
+    project: str
+    title: str
+    duration: int
+    status: TaskStatus
+    omission_count: int
 
 
 class HyperfocusManager:
@@ -67,6 +88,7 @@ class HyperfocusManager:
         ]
 
         self.current_task: HyperfocusTask | None = None
+        self.action_history: list[TaskActionResult] = []
         self._listeners: set[Callable[[], None]] = set()
 
     @property
@@ -77,6 +99,15 @@ class HyperfocusManager:
             task.status is TaskStatus.AVAILABLE
             for task in self.tasks
         )
+
+    @property
+    def last_action(self) -> TaskActionResult | None:
+        """Return the most recently recorded action."""
+
+        if not self.action_history:
+            return None
+
+        return self.action_history[-1]
 
     def draw(self) -> HyperfocusTask:
         """Select an available task without immediately repeating one."""
@@ -123,6 +154,7 @@ class HyperfocusManager:
         task.status = TaskStatus.ACTIVE
         task.omission_count = 0
 
+        self._record_action(TaskAction.ACCEPTED, task)
         self._notify_listeners()
 
         return task
@@ -139,6 +171,8 @@ class HyperfocusManager:
         else:
             skipped_task.status = TaskStatus.AVAILABLE
 
+        self._record_action(TaskAction.SKIPPED, skipped_task)
+
         try:
             return self.draw()
         except NoAvailableTasksError:
@@ -151,9 +185,31 @@ class HyperfocusManager:
 
         task.status = TaskStatus.FINISHED
 
+        self._record_action(TaskAction.COMPLETED, task)
         self._notify_listeners()
 
         return task
+
+    def _record_action(
+        self,
+        action: TaskAction,
+        task: HyperfocusTask,
+    ) -> TaskActionResult:
+        """Record and return the result of a task action."""
+
+        result = TaskActionResult(
+            action=action,
+            task_id=task.task_id,
+            project=task.project,
+            title=task.title,
+            duration=task.duration,
+            status=task.status,
+            omission_count=task.omission_count,
+        )
+
+        self.action_history.append(result)
+
+        return result
 
     def _require_current_task(
         self,

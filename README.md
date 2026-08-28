@@ -76,9 +76,9 @@ ha core restart
 
 ### 0.3 — Ciclo de una tarea
 
-- [ ] Crear los botones **Aceptar**, **Omitir** y **Completar**.
-- [ ] Agregar estados: propuesta, activa, bloqueada y terminada.
-- [ ] Registrar el resultado de cada acción.
+- [x] Crear los botones **Aceptar**, **Omitir** y **Completar**.
+- [x] Agregar estados: propuesta, activa, bloqueada y terminada.
+- [x] Registrar el resultado de cada acción.
 - [ ] Disparar eventos para automatizaciones.
 
 ### 0.4 — Persistencia
