@@ -1,5 +1,6 @@
 """Tests for the Hyperfocus Roulette manager."""
 
+import json
 from custom_components.hyperfocus_roulette.manager import (
     HyperfocusManager,
     TaskAction,
@@ -166,3 +167,29 @@ def test_task_actions_are_recorded() -> None:
     assert completed_result.status is TaskStatus.FINISHED
     assert manager.last_action is completed_result
     assert skipped_result.project_id == skipped_task.project_id
+
+
+def test_manager_data_can_be_serialized_and_restored() -> None:
+    """Test that manager data survives a JSON round trip."""
+
+    manager = HyperfocusManager()
+    selected_task = manager.draw()
+    manager.accept()
+
+    serialized_data = manager.to_dict()
+
+    json_data = json.dumps(serialized_data)
+    restored_data = json.loads(json_data)
+
+    restored_manager = HyperfocusManager.from_dict(restored_data)
+
+    assert restored_manager.projects == manager.projects
+    assert restored_manager.tasks == manager.tasks
+    assert restored_manager.action_history == manager.action_history
+
+    assert restored_manager.current_task is not None
+    assert restored_manager.current_task.task_id == selected_task.task_id
+    assert restored_manager.current_task.status is TaskStatus.ACTIVE
+
+    assert restored_manager.last_action is not None
+    assert restored_manager.last_action.action is TaskAction.ACCEPTED

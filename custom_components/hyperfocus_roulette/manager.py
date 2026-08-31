@@ -4,6 +4,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 import random
+from typing import Any
 
 
 MAX_OMISSIONS = 3
@@ -150,6 +151,104 @@ class HyperfocusManager:
         """Return a project by its identifier."""
 
         return self.projects[project_id]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return all manager data in a JSON-compatible structure."""
+
+        return {
+            "projects": [
+                {
+                    "project_id": project.project_id,
+                    "name": project.name,
+                }
+                for project in self.projects.values()
+            ],
+            "tasks": [
+                {
+                    "task_id": task.task_id,
+                    "project_id": task.project_id,
+                    "title": task.title,
+                    "duration": task.duration,
+                    "status": task.status.value,
+                    "omission_count": task.omission_count,
+                }
+                for task in self.tasks
+            ],
+            "current_task_id": (
+                self.current_task.task_id
+                if self.current_task is not None
+                else None
+            ),
+            "action_history": [
+                {
+                    "action": result.action.value,
+                    "task_id": result.task_id,
+                    "project_id": result.project_id,
+                    "project": result.project,
+                    "title": result.title,
+                    "duration": result.duration,
+                    "status": result.status.value,
+                    "omission_count": result.omission_count,
+                }
+                for result in self.action_history
+            ],
+        }
+
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+    ) -> "HyperfocusManager":
+        """Create a manager from previously serialized data."""
+
+        manager = cls()
+
+        manager.projects = {
+            project_data["project_id"]: HyperfocusProject(
+                project_id=project_data["project_id"],
+                name=project_data["name"],
+            )
+            for project_data in data["projects"]
+        }
+
+        manager.tasks = [
+            HyperfocusTask(
+                task_id=task_data["task_id"],
+                project_id=task_data["project_id"],
+                title=task_data["title"],
+                duration=task_data["duration"],
+                status=TaskStatus(task_data["status"]),
+                omission_count=task_data["omission_count"],
+            )
+            for task_data in data["tasks"]
+        ]
+
+        manager.action_history = [
+            TaskActionResult(
+                action=TaskAction(result_data["action"]),
+                task_id=result_data["task_id"],
+                project_id=result_data["project_id"],
+                project=result_data["project"],
+                title=result_data["title"],
+                duration=result_data["duration"],
+                status=TaskStatus(result_data["status"]),
+                omission_count=result_data["omission_count"],
+            )
+            for result_data in data["action_history"]
+        ]
+
+        current_task_id = data["current_task_id"]
+
+        manager.current_task = next(
+            (
+                task
+                for task in manager.tasks
+                if task.task_id == current_task_id
+            ),
+            None,
+        )
+
+        return manager
 
     def draw(self) -> HyperfocusTask:
         """Select an available task without immediately repeating one."""
