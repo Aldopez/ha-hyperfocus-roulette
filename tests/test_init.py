@@ -2,6 +2,7 @@
 
 from homeassistant.core import Event, HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
+from unittest.mock import patch
 
 from custom_components.hyperfocus_roulette.const import (
     DOMAIN,
@@ -124,3 +125,24 @@ async def test_setup_restores_saved_manager(
     assert restored_manager.current_task.status is TaskStatus.ACTIVE
     assert restored_manager.tasks == saved_manager.tasks
     assert restored_manager.action_history == saved_manager.action_history
+
+
+async def test_manager_update_schedules_storage_save(
+    hass: HomeAssistant,
+) -> None:
+    """Test that manager updates schedule persistent storage."""
+
+    with patch.object(
+        HyperfocusStorage,
+        "async_schedule_save",
+    ) as schedule_save:
+        entry = MockConfigEntry(domain=DOMAIN)
+        entry.add_to_hass(hass)
+
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+        manager: HyperfocusManager = entry.runtime_data
+        manager.draw()
+
+        schedule_save.assert_called_once_with(manager)

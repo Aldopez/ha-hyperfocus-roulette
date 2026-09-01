@@ -35,6 +35,8 @@ async def async_setup_entry(
     def handle_manager_update() -> None:
         """Fire an event when a task is selected."""
 
+        storage.async_schedule_save(manager)
+
         task = manager.current_task
 
         if task is None or task.status is not TaskStatus.PROPOSED:

@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN
@@ -11,6 +11,7 @@ from .manager import HyperfocusManager
 
 STORAGE_VERSION = 1
 STORAGE_KEY = f"{DOMAIN}.data"
+STORAGE_SAVE_DELAY = 1.0
 
 
 class HyperfocusStorage:
@@ -42,3 +43,15 @@ class HyperfocusStorage:
         """Save manager data."""
 
         await self._store.async_save(manager.to_dict())
+
+    @callback
+    def async_schedule_save(
+        self,
+        manager: HyperfocusManager,
+    ) -> None:
+        """Schedule manager data to be saved."""
+
+        self._store.async_delay_save(
+            manager.to_dict,
+            STORAGE_SAVE_DELAY,
+        )
