@@ -13,6 +13,7 @@ from .manager import (
     TaskActionResult,
     TaskStatus,
 )
+from .storage import HyperfocusStorage
 
 
 async def async_setup_entry(
@@ -21,7 +22,13 @@ async def async_setup_entry(
 ) -> bool:
     """Set up Hyperfocus Roulette from a config entry."""
 
-    manager = HyperfocusManager()
+    storage = HyperfocusStorage(hass)
+    manager = await storage.async_load()
+
+    if manager is None:
+         manager = HyperfocusManager()
+         await storage.async_save(manager)
+
     entry.runtime_data = manager
 
     @callback

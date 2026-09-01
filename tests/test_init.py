@@ -13,6 +13,9 @@ from custom_components.hyperfocus_roulette.manager import (
     TaskAction,
     TaskStatus,
 )
+from custom_components.hyperfocus_roulette.storage import (
+    HyperfocusStorage,
+)
 
 
 async def test_draw_fires_task_selected_event(
@@ -93,3 +96,31 @@ async def test_accept_fires_task_action_event(
         "status": TaskStatus.ACTIVE.value,
         "omission_count": 0,
     }
+
+
+async def test_setup_restores_saved_manager(
+    hass: HomeAssistant,
+) -> None:
+    """Test that setup restores previously saved manager data."""
+
+    storage = HyperfocusStorage(hass)
+
+    saved_manager = HyperfocusManager()
+    selected_task = saved_manager.draw()
+    saved_manager.accept()
+
+    await storage.async_save(saved_manager)
+
+    entry = MockConfigEntry(domain=DOMAIN)
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    restored_manager: HyperfocusManager = entry.runtime_data
+
+    assert restored_manager.current_task is not None
+    assert restored_manager.current_task.task_id == selected_task.task_id
+    assert restored_manager.current_task.status is TaskStatus.ACTIVE
+    assert restored_manager.tasks == saved_manager.tasks
+    assert restored_manager.action_history == saved_manager.action_history
