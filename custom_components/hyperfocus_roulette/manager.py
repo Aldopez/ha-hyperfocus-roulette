@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 import random
 from typing import Any
+from uuid import uuid4
 
 
 MAX_OMISSIONS = 3
@@ -34,6 +35,14 @@ class NoAvailableTasksError(Exception):
 
 class InvalidTaskTransitionError(Exception):
     """Raised when an action is invalid for the current task state."""
+
+
+class ProjectNotFoundError(Exception):
+    """Raised when a project does not exist."""
+
+
+class ProjectHasTasksError(Exception):
+    """Raised when deleting a project that still has tasks."""
 
 
 @dataclass(slots=True)
@@ -150,7 +159,56 @@ class HyperfocusManager:
     def get_project(self, project_id: str,) -> HyperfocusProject:
         """Return a project by its identifier."""
 
-        return self.projects[project_id]
+        try:
+            return self.projects[project_id]
+        except KeyError as error:
+            raise ProjectNotFoundError from error
+
+    def add_project(self, name: str) -> HyperfocusProject:
+        """Create a project."""
+
+        project = HyperfocusProject(
+            project_id=str(uuid4()),
+            name=name,
+        )
+
+        self.projects[project.project_id] = project
+        self._notify_listeners()
+
+        return project
+
+    def rename_project(
+        self,
+        project_id: str,
+        name: str,
+    ) -> HyperfocusProject:
+        """Rename an existing project."""
+
+        project = self.get_project(project_id)
+        project.name = name
+
+        self._notify_listeners()
+
+        return project
+
+    def delete_project(
+        self,
+        project_id: str,
+    ) -> HyperfocusProject:
+        """Delete an empty project."""
+
+        project = self.get_project(project_id)
+
+        if any(
+            task.project_id == project_id
+            for task in self.tasks
+        ):
+            raise ProjectHasTasksError
+
+        del self.projects[project_id]
+        self._notify_listeners()
+
+        return project
 
     def to_dict(self) -> dict[str, Any]:
         """Return all manager data in a JSON-compatible structure."""

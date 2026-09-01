@@ -1,10 +1,16 @@
 """Tests for the Hyperfocus Roulette manager."""
 
 import json
+
+from uuid import UUID
+
+import pytest
+
 from custom_components.hyperfocus_roulette.manager import (
     HyperfocusManager,
     TaskAction,
     TaskStatus,
+    ProjectHasTasksError,
 )
 
 
@@ -193,3 +199,56 @@ def test_manager_data_can_be_serialized_and_restored() -> None:
 
     assert restored_manager.last_action is not None
     assert restored_manager.last_action.action is TaskAction.ACCEPTED
+
+
+def test_project_can_be_added() -> None:
+    """Test creating a project with a generated UUID."""
+
+    manager = HyperfocusManager()
+
+    project = manager.add_project("Acuario plantado")
+
+    assert project.name == "Acuario plantado"
+    assert manager.projects[project.project_id] is project
+    assert str(UUID(project.project_id)) == project.project_id
+
+
+def test_project_can_be_renamed() -> None:
+    """Test renaming a project without changing its identifier."""
+
+    manager = HyperfocusManager()
+    project = manager.add_project("Nombre anterior")
+    project_id = project.project_id
+
+    renamed_project = manager.rename_project(
+        project_id,
+        "Nombre nuevo",
+    )
+
+    assert renamed_project is project
+    assert renamed_project.project_id == project_id
+    assert renamed_project.name == "Nombre nuevo"
+
+
+def test_empty_project_can_be_deleted() -> None:
+    """Test deleting a project without tasks."""
+
+    manager = HyperfocusManager()
+    project = manager.add_project("Proyecto temporal")
+
+    deleted_project = manager.delete_project(project.project_id)
+
+    assert deleted_project is project
+    assert project.project_id not in manager.projects
+
+
+def test_project_with_tasks_cannot_be_deleted() -> None:
+    """Test that a project containing tasks cannot be deleted."""
+
+    manager = HyperfocusManager()
+    project_id = manager.tasks[0].project_id
+
+    with pytest.raises(ProjectHasTasksError):
+        manager.delete_project(project_id)
+
+    assert project_id in manager.projects
