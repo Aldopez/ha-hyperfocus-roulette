@@ -9,6 +9,25 @@
     },
     "abort": {
       "single_instance_allowed": "Solo puede configurarse una instancia de Ruleta del Hiperfoco."
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Administrar proyectos",
+          "menu_options": {
+            "add_project": "Agregar proyecto"
+          }
+        },
+        "add_project": {
+          "title": "Agregar proyecto",
+          "data": {
+            "name": "Nombre"
+          }
+        }
+      },
+      "error": {
+        "empty_name": "El nombre del proyecto no puede estar vacío."
+      }
     }
   },
   "entity": {

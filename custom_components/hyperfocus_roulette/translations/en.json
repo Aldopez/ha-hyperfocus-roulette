@@ -9,6 +9,25 @@
     },
     "abort": {
       "single_instance_allowed": "Only one Hyperfocus Roulette instance can be configured."
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Manage projects",
+          "menu_options": {
+            "add_project": "Add project"
+          }
+        },
+        "add_project": {
+          "title": "Add project",
+          "data": {
+            "name": "Name"
+          }
+        }
+      },
+      "error": {
+        "empty_name": "The project name cannot be empty."
+      }
     }
   },
   "entity": {
