@@ -100,13 +100,13 @@ ha core restart
 - [x] Asignar identificadores estables a los proyectos y las tareas.
 - [x] Serializar proyectos, tareas, estado e historial.
 - [x] Guardar los datos mediante `Store`.
-- [ ] Restaurar los datos después de reiniciar.
-- [ ] Crear los datos iniciales solamente en la primera instalación.
-- [ ] Guardar automáticamente después de cada acción.
+- [x] Restaurar los datos después de reiniciar.
+- [x] Crear los datos iniciales solamente en la primera instalación.
+- [x] Guardar automáticamente después de cada acción.
 - [ ] Permitir administrar proyectos.
 - [ ] Permitir administrar tareas.
 - [ ] Implementar migraciones de datos.
-- [ ] Agregar pruebas de persistencia y restauración.
+- [x] Agregar pruebas de persistencia y restauración.
 
 ### 0.5 — Selección contextual
 
