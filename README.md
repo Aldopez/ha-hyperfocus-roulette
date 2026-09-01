@@ -99,7 +99,7 @@ ha core restart
 - [x] Crear modelos separados para proyectos y tareas.
 - [x] Asignar identificadores estables a los proyectos y las tareas.
 - [x] Serializar proyectos, tareas, estado e historial.
-- [ ] Guardar los datos mediante `Store`.
+- [x] Guardar los datos mediante `Store`.
 - [ ] Restaurar los datos después de reiniciar.
 - [ ] Crear los datos iniciales solamente en la primera instalación.
 - [ ] Guardar automáticamente después de cada acción.
