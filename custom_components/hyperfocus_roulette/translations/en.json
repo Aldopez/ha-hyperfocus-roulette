@@ -16,7 +16,9 @@
       "init": {
         "title": "Manage projects",
         "menu_options": {
-          "add_project": "Add project"
+          "add_project": "Add project",
+          "rename_project": "Rename project",
+          "delete_project": "Delete project"
         }
       },
       "add_project": {
@@ -24,10 +26,27 @@
         "data": {
           "name": "Name"
         }
+      },
+      "rename_project": {
+        "title": "Rename project",
+        "data": {
+          "project_id": "Project",
+          "name": "New name"
+        }
+      },
+      "delete_project": {
+        "title": "Delete project",
+        "description": "Only projects without tasks can be deleted.",
+        "data": {
+          "project_id": "Project",
+          "confirm": "Confirm deletion"
+        }
       }
     },
     "error": {
-      "empty_name": "The project name cannot be empty."
+      "empty_name": "The project name cannot be empty.",
+      "confirmation_required": "You must confirm the deletion.",
+      "project_has_tasks": "The project cannot be deleted because it contains tasks."
     }
   },
   "entity": {

@@ -13,7 +13,10 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
-from .manager import HyperfocusManager
+from .manager import (
+    HyperfocusManager,
+    ProjectHasTasksError,
+)
 
 
 class HyperfocusRouletteConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -73,7 +76,11 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
 
         return self.async_show_menu(
             step_id="init",
-            menu_options=["add_project"],
+            menu_options=[
+                "add_project",
+                "rename_project",
+                "delete_project",
+            ],
         )
 
     async def async_step_add_project(
@@ -102,6 +109,86 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
             data_schema=vol.Schema(
                 {
                     vol.Required("name"): str,
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_rename_project(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> FlowResult:
+        """Rename a project."""
+
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            name = user_input["name"].strip()
+
+            if name:
+                self.manager.rename_project(
+                    user_input["project_id"],
+                    name,
+                )
+
+                return self.async_create_entry(
+                    title="",
+                    data=dict(self._config_entry.options),
+                )
+
+            errors["name"] = "empty_name"
+
+        return self.async_show_form(
+            step_id="rename_project",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("project_id"): vol.In(
+                        {
+                            project.project_id: project.name
+                            for project in self.manager.projects.values()
+                        }
+                    ),
+                    vol.Required("name"): str,
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_delete_project(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> FlowResult:
+        """Delete an empty project."""
+
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            if not user_input["confirm"]:
+                errors["confirm"] = "confirmation_required"
+            else:
+                try:
+                    self.manager.delete_project(
+                        user_input["project_id"]
+                    )
+                except ProjectHasTasksError:
+                    errors["base"] = "project_has_tasks"
+                else:
+                    return self.async_create_entry(
+                        title="",
+                        data=dict(self._config_entry.options),
+                    )
+
+        return self.async_show_form(
+            step_id="delete_project",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("project_id"): vol.In(
+                        {
+                            project.project_id: project.name
+                            for project in self.manager.projects.values()
+                        }
+                    ),
+                    vol.Required("confirm", default=False): bool,
                 }
             ),
             errors=errors,

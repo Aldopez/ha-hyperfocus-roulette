@@ -16,7 +16,9 @@
       "init": {
         "title": "Administrar proyectos",
         "menu_options": {
-          "add_project": "Agregar proyecto"
+          "add_project": "Agregar proyecto",
+          "rename_project": "Renombrar proyecto",
+          "delete_project": "Eliminar proyecto"
         }
       },
       "add_project": {
@@ -24,10 +26,27 @@
         "data": {
           "name": "Nombre"
         }
+      },
+      "rename_project": {
+        "title": "Renombrar proyecto",
+        "data": {
+          "project_id": "Proyecto",
+          "name": "Nuevo nombre"
+        }
+      },
+      "delete_project": {
+        "title": "Eliminar proyecto",
+        "description": "Solo pueden eliminarse proyectos que no contengan tareas.",
+        "data": {
+          "project_id": "Proyecto",
+          "confirm": "Confirmar eliminación"
+        }
       }
     },
     "error": {
-      "empty_name": "El nombre del proyecto no puede estar vacío."
+      "empty_name": "El nombre del proyecto no puede estar vacío.",
+      "confirmation_required": "Debes confirmar la eliminación.",
+      "project_has_tasks": "El proyecto no puede eliminarse porque contiene tareas."
     }
   },
   "entity": {
