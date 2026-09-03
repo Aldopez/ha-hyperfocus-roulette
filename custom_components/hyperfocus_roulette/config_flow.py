@@ -80,6 +80,7 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
                 "add_project",
                 "rename_project",
                 "delete_project",
+                "add_task",
             ],
         )
 
@@ -189,6 +190,55 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
                         }
                     ),
                     vol.Required("confirm", default=False): bool,
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_add_task(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> FlowResult:
+        """Create a task."""
+
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            title = user_input["title"].strip()
+
+            if title:
+                self.manager.add_task(
+                    project_id=user_input["project_id"],
+                    title=title,
+                    duration=user_input["duration"],
+                )
+
+                return self.async_create_entry(
+                    title="",
+                    data=dict(self._config_entry.options),
+                )
+
+            errors["title"] = "empty_title"
+
+        return self.async_show_form(
+            step_id="add_task",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("project_id"): vol.In(
+                        {
+                            project.project_id: project.name
+                            for project
+                            in self.manager.projects.values()
+                        }
+                    ),
+                    vol.Required("title"): str,
+                    vol.Required(
+                        "duration",
+                        default=30,
+                    ): vol.All(
+                        int,
+                        vol.Range(min=1),
+                    ),
                 }
             ),
             errors=errors,

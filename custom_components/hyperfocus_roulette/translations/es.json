@@ -14,11 +14,12 @@
   "options": {
     "step": {
       "init": {
-        "title": "Administrar proyectos",
+        "title": "Administrar proyectos y tareas",
         "menu_options": {
           "add_project": "Agregar proyecto",
           "rename_project": "Renombrar proyecto",
-          "delete_project": "Eliminar proyecto"
+          "delete_project": "Eliminar proyecto",
+          "add_task": "Agregar tarea"
         }
       },
       "add_project": {
@@ -41,12 +42,21 @@
           "project_id": "Proyecto",
           "confirm": "Confirmar eliminación"
         }
+      },
+      "add_task": {
+        "title": "Agregar tarea",
+        "data": {
+          "project_id": "Proyecto",
+          "title": "Tarea",
+          "duration": "Duración en minutos"
+        }
       }
     },
     "error": {
       "empty_name": "El nombre del proyecto no puede estar vacío.",
       "confirmation_required": "Debes confirmar la eliminación.",
-      "project_has_tasks": "El proyecto no puede eliminarse porque contiene tareas."
+      "project_has_tasks": "El proyecto no puede eliminarse porque contiene tareas.",
+      "empty_title": "La descripción de la tarea no puede estar vacía."
     }
   },
   "entity": {

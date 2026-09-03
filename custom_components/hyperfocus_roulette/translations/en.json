@@ -14,11 +14,12 @@
   "options": {
     "step": {
       "init": {
-        "title": "Manage projects",
+        "title": "Manage projects and tasks",
         "menu_options": {
           "add_project": "Add project",
           "rename_project": "Rename project",
-          "delete_project": "Delete project"
+          "delete_project": "Delete project",
+          "add_task": "Add task"
         }
       },
       "add_project": {
@@ -41,12 +42,21 @@
           "project_id": "Project",
           "confirm": "Confirm deletion"
         }
+      },
+      "add_task": {
+      "title": "Add task",
+      "data": {
+        "project_id": "Project",
+        "title": "Task",
+        "duration": "Duration in minutes"
       }
+    }
     },
     "error": {
       "empty_name": "The project name cannot be empty.",
       "confirmation_required": "You must confirm the deletion.",
-      "project_has_tasks": "The project cannot be deleted because it contains tasks."
+      "project_has_tasks": "The project cannot be deleted because it contains tasks.",
+      "empty_title": "The task description cannot be empty."
     }
   },
   "entity": {

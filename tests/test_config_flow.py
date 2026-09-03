@@ -34,6 +34,7 @@ async def test_options_flow_can_add_project(
         "add_project",
         "rename_project",
         "delete_project",
+        "add_task",
     ]
 
     result = await hass.config_entries.options.async_configure(
@@ -161,3 +162,58 @@ async def test_options_flow_rejects_deleting_project_with_tasks(
         "base": "project_has_tasks"
     }
     assert project_id in manager.projects
+
+
+async def test_options_flow_can_add_task(
+    hass: HomeAssistant,
+) -> None:
+    """Test creating a task from the options flow."""
+
+    entry = MockConfigEntry(domain=DOMAIN)
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    manager: HyperfocusManager = entry.runtime_data
+    project = next(iter(manager.projects.values()))
+    existing_task_ids = {
+        task.task_id
+        for task in manager.tasks
+    }
+
+    result = await hass.config_entries.options.async_init(
+        entry.entry_id
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {"next_step_id": "add_task"},
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "add_task"
+
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {
+            "project_id": project.project_id,
+            "title": "Comprar MOSFET logic-level",
+            "duration": 20,
+        },
+    )
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+
+    new_tasks = [
+        task
+        for task in manager.tasks
+        if task.task_id not in existing_task_ids
+    ]
+
+    assert len(new_tasks) == 1
+
+    new_task = new_tasks[0]
+
+    assert new_task.project_id == project.project_id
+    assert new_task.title == "Comprar MOSFET logic-level"
+    assert new_task.duration == 20
