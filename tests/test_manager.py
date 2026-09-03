@@ -11,6 +11,7 @@ from custom_components.hyperfocus_roulette.manager import (
     TaskAction,
     TaskStatus,
     ProjectHasTasksError,
+    CurrentTaskDeletionError,
 )
 
 
@@ -252,3 +253,79 @@ def test_project_with_tasks_cannot_be_deleted() -> None:
         manager.delete_project(project_id)
 
     assert project_id in manager.projects
+
+
+def test_task_can_be_added() -> None:
+    """Test creating a task with a generated UUID."""
+
+    manager = HyperfocusManager()
+    project = next(iter(manager.projects.values()))
+
+    task = manager.add_task(
+        project_id=project.project_id,
+        title="Comprar MOSFET logic-level",
+        duration=20,
+    )
+
+    assert task in manager.tasks
+    assert task.project_id == project.project_id
+    assert task.title == "Comprar MOSFET logic-level"
+    assert task.duration == 20
+    assert task.status is TaskStatus.AVAILABLE
+    assert str(UUID(task.task_id)) == task.task_id
+
+
+def test_task_can_be_updated() -> None:
+    """Test updating a task without resetting its state."""
+
+    manager = HyperfocusManager()
+    task = manager.tasks[0]
+    destination_project = list(manager.projects.values())[1]
+
+    task.status = TaskStatus.BLOCKED
+    task.omission_count = 3
+    task_id = task.task_id
+
+    updated_task = manager.update_task(
+        task_id=task_id,
+        project_id=destination_project.project_id,
+        title="Nueva descripción",
+        duration=45,
+    )
+
+    assert updated_task is task
+    assert updated_task.task_id == task_id
+    assert updated_task.project_id == destination_project.project_id
+    assert updated_task.title == "Nueva descripción"
+    assert updated_task.duration == 45
+    assert updated_task.status is TaskStatus.BLOCKED
+    assert updated_task.omission_count == 3
+
+
+def test_task_can_be_deleted() -> None:
+    """Test deleting a task that is not currently in progress."""
+
+    manager = HyperfocusManager()
+    task = manager.tasks[0]
+
+    deleted_task = manager.delete_task(task.task_id)
+
+    assert deleted_task is task
+    assert task not in manager.tasks
+
+
+def test_current_proposed_or_active_task_cannot_be_deleted() -> None:
+    """Test protecting the current proposed or active task."""
+
+    proposed_manager = HyperfocusManager()
+    proposed_task = proposed_manager.draw()
+
+    with pytest.raises(CurrentTaskDeletionError):
+        proposed_manager.delete_task(proposed_task.task_id)
+
+    active_manager = HyperfocusManager()
+    active_task = active_manager.draw()
+    active_manager.accept()
+
+    with pytest.raises(CurrentTaskDeletionError):
+        active_manager.delete_task(active_task.task_id)

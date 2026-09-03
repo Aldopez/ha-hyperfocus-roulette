@@ -45,6 +45,14 @@ class ProjectHasTasksError(Exception):
     """Raised when deleting a project that still has tasks."""
 
 
+class TaskNotFoundError(Exception):
+    """Raised when a task does not exist."""
+
+
+class CurrentTaskDeletionError(Exception):
+    """Raised when deleting the proposed or active task."""
+
+
 @dataclass(slots=True)
 class HyperfocusProject:
     """Represent a project containing roulette tasks."""
@@ -209,6 +217,84 @@ class HyperfocusManager:
         self._notify_listeners()
 
         return project
+
+    def get_task(self, task_id: str) -> HyperfocusTask:
+        """Return a task by its identifier."""
+
+        for task in self.tasks:
+            if task.task_id == task_id:
+                return task
+
+        raise TaskNotFoundError
+
+    def add_task(
+        self,
+        project_id: str,
+        title: str,
+        duration: int,
+    ) -> HyperfocusTask:
+        """Create a task."""
+
+        self.get_project(project_id)
+
+        task = HyperfocusTask(
+            task_id=str(uuid4()),
+            project_id=project_id,
+            title=title,
+            duration=duration,
+        )
+
+        self.tasks.append(task)
+        self._notify_listeners()
+
+        return task
+
+    def update_task(
+        self,
+        task_id: str,
+        project_id: str,
+        title: str,
+        duration: int,
+    ) -> HyperfocusTask:
+        """Update an existing task."""
+
+        task = self.get_task(task_id)
+
+        self.get_project(project_id)
+
+        task.project_id = project_id
+        task.title = title
+        task.duration = duration
+
+        self._notify_listeners()
+
+        return task
+
+    def delete_task(
+        self,
+        task_id: str,
+    ) -> HyperfocusTask:
+        """Delete a task unless it is currently proposed or active."""
+
+        task = self.get_task(task_id)
+
+        if (
+            self.current_task is task
+            and task.status in {
+                TaskStatus.PROPOSED,
+                TaskStatus.ACTIVE,
+            }
+        ):
+            raise CurrentTaskDeletionError
+
+        self.tasks.remove(task)
+
+        if self.current_task is task:
+            self.current_task = None
+
+        self._notify_listeners()
+
+        return task
 
     def to_dict(self) -> dict[str, Any]:
         """Return all manager data in a JSON-compatible structure."""
