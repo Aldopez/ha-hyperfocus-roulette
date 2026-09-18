@@ -10,8 +10,34 @@ from .manager import HyperfocusManager
 
 
 STORAGE_VERSION = 1
+STORAGE_MINOR_VERSION = 2
 STORAGE_KEY = f"{DOMAIN}.data"
 STORAGE_SAVE_DELAY = 1.0
+
+
+class HyperfocusStore(Store[dict[str, Any]]):
+    """Store Hyperfocus Roulette data with migration support."""
+
+    async def _async_migrate_func(
+        self,
+        old_major_version: int,
+        old_minor_version: int,
+        old_data: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Migrate stored data to the current version."""
+
+        if old_major_version != STORAGE_VERSION:
+            raise NotImplementedError
+
+        if old_minor_version < 2:
+            for task_data in old_data.get("tasks", []):
+                task_data.setdefault("status", "available")
+                task_data.setdefault("omission_count", 0)
+
+            old_data.setdefault("current_task_id", None)
+            old_data.setdefault("action_history", [])
+
+        return old_data
 
 
 class HyperfocusStorage:
@@ -20,10 +46,11 @@ class HyperfocusStorage:
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize storage."""
 
-        self._store: Store[dict[str, Any]] = Store(
+        self._store = HyperfocusStore(
             hass,
             STORAGE_VERSION,
             STORAGE_KEY,
+            minor_version=STORAGE_MINOR_VERSION,
         )
 
     async def async_load(self) -> HyperfocusManager | None:
