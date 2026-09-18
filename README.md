@@ -4,7 +4,7 @@ Integración personalizada para Home Assistant que selecciona una próxima tarea
 
 La idea nació como una automatización innecesaria y rápidamente se convirtió en otro proyecto del backlog.
 
-> Estado: desarrollo experimental — versión 0.3 completada.
+> Estado: desarrollo experimental — versión 0.4 completada.
 
 ## Objetivo
 
@@ -23,7 +23,6 @@ La integración permite sortear, aceptar, omitir y completar una tarea. Una tare
 - Configuración desde la interfaz de Home Assistant.
 - Una única instancia.
 - Dispositivo virtual para agrupar entidades.
-- Tres tareas temporales almacenadas en memoria.
 - Botones **Sortear**, **Aceptar**, **Omitir** y **Completar**.
 - Sensor que muestra la tarea actual, su estado y cantidad de omisiones.
 - Estados disponible, propuesta, activa, bloqueada y terminada.
@@ -34,8 +33,11 @@ La integración permite sortear, aceptar, omitir y completar una tarea. Una tare
 - Evento `hyperfocus_roulette_task_selected` al presentar una propuesta.
 - Traducciones en inglés, español y español latinoamericano.
 - Pruebas automáticas ejecutadas mediante GitHub Actions.
+- Proyectos y tareas persistentes con identificadores UUID estables.
+- Administración de proyectos y tareas desde la interfaz.
+- Migración automática del formato de almacenamiento.
 
-Los datos todavía se almacenan únicamente en memoria y se reinician al recargar Home Assistant.
+Los datos se almacenan mediante `Store` y se restauran después de reiniciar Home Assistant.
 
 ## Instalación para desarrollo
 
@@ -105,7 +107,7 @@ ha core restart
 - [x] Guardar automáticamente después de cada acción.
 - [x] Permitir administrar proyectos.
 - [x] Permitir administrar tareas.
-- [ ] Implementar migraciones de datos.
+- [x] Implementar migraciones de datos.
 - [x] Agregar pruebas de persistencia y restauración.
 
 ### 0.5 — Selección contextual
