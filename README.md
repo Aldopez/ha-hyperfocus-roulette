@@ -104,7 +104,7 @@ ha core restart
 - [x] Crear los datos iniciales solamente en la primera instalación.
 - [x] Guardar automáticamente después de cada acción.
 - [x] Permitir administrar proyectos.
-- [ ] Permitir administrar tareas.
+- [x] Permitir administrar tareas.
 - [ ] Implementar migraciones de datos.
 - [x] Agregar pruebas de persistencia y restauración.
 
