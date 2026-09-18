@@ -35,6 +35,8 @@ async def test_options_flow_can_add_project(
         "rename_project",
         "delete_project",
         "add_task",
+        "update_task",
+        "delete_task",
     ]
 
     result = await hass.config_entries.options.async_configure(
@@ -217,3 +219,117 @@ async def test_options_flow_can_add_task(
     assert new_task.project_id == project.project_id
     assert new_task.title == "Comprar MOSFET logic-level"
     assert new_task.duration == 20
+
+
+async def test_options_flow_can_update_task(
+    hass: HomeAssistant,
+) -> None:
+    """Test updating a task from the options flow."""
+
+    entry = MockConfigEntry(domain=DOMAIN)
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    manager: HyperfocusManager = entry.runtime_data
+    task = manager.tasks[0]
+    destination_project = list(manager.projects.values())[1]
+
+    result = await hass.config_entries.options.async_init(
+        entry.entry_id
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {"next_step_id": "update_task"},
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {"task_id": task.task_id},
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "edit_task"
+
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {
+            "project_id": destination_project.project_id,
+            "title": "Tarea actualizada",
+            "duration": 45,
+        },
+    )
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert task.project_id == destination_project.project_id
+    assert task.title == "Tarea actualizada"
+    assert task.duration == 45
+
+
+async def test_options_flow_can_delete_task(
+    hass: HomeAssistant,
+) -> None:
+    """Test deleting a task from the options flow."""
+
+    entry = MockConfigEntry(domain=DOMAIN)
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    manager: HyperfocusManager = entry.runtime_data
+    task = manager.tasks[0]
+
+    result = await hass.config_entries.options.async_init(
+        entry.entry_id
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {"next_step_id": "delete_task"},
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {
+            "task_id": task.task_id,
+            "confirm": True,
+        },
+    )
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert task not in manager.tasks
+
+
+async def test_options_flow_rejects_deleting_current_task(
+    hass: HomeAssistant,
+) -> None:
+    """Test protecting the proposed task from deletion."""
+
+    entry = MockConfigEntry(domain=DOMAIN)
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    manager: HyperfocusManager = entry.runtime_data
+    current_task = manager.draw()
+
+    result = await hass.config_entries.options.async_init(
+        entry.entry_id
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {"next_step_id": "delete_task"},
+    )
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {
+            "task_id": current_task.task_id,
+            "confirm": True,
+        },
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {
+        "base": "current_task"
+    }
+    assert current_task in manager.tasks

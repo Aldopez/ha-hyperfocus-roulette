@@ -19,7 +19,9 @@
           "add_project": "Add project",
           "rename_project": "Rename project",
           "delete_project": "Delete project",
-          "add_task": "Add task"
+          "add_task": "Add task",
+          "update_task": "Edit task",
+          "delete_task": "Delete task"
         }
       },
       "add_project": {
@@ -44,19 +46,42 @@
         }
       },
       "add_task": {
-      "title": "Add task",
-      "data": {
-        "project_id": "Project",
-        "title": "Task",
-        "duration": "Duration in minutes"
+        "title": "Add task",
+        "data": {
+          "project_id": "Project",
+          "title": "Task",
+          "duration": "Duration in minutes"
+        }
+      },
+      "update_task": {
+        "title": "Choose a task to edit",
+        "data": {
+          "task_id": "Task"
+        }
+      },
+      "edit_task": {
+        "title": "Edit task",
+        "data": {
+          "project_id": "Project",
+          "title": "Task",
+          "duration": "Duration in minutes"
+        }
+      },
+      "delete_task": {
+        "title": "Delete task",
+        "description": "A currently proposed or active task cannot be deleted.",
+        "data": {
+          "task_id": "Task",
+          "confirm": "Confirm deletion"
+        }
       }
-    }
     },
     "error": {
       "empty_name": "The project name cannot be empty.",
       "confirmation_required": "You must confirm the deletion.",
       "project_has_tasks": "The project cannot be deleted because it contains tasks.",
-      "empty_title": "The task description cannot be empty."
+      "empty_title": "The task description cannot be empty.",
+      "current_task": "The task cannot be deleted because it is currently proposed or active."
     }
   },
   "entity": {
