@@ -6,11 +6,14 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN
-from .manager import HyperfocusManager
+from .manager import (
+    DEFAULT_AVAILABLE_TIME,
+    HyperfocusManager
+)
 
 
 STORAGE_VERSION = 1
-STORAGE_MINOR_VERSION = 2
+STORAGE_MINOR_VERSION = 3
 STORAGE_KEY = f"{DOMAIN}.data"
 STORAGE_SAVE_DELAY = 1.0
 
@@ -36,6 +39,12 @@ class HyperfocusStore(Store[dict[str, Any]]):
 
             old_data.setdefault("current_task_id", None)
             old_data.setdefault("action_history", [])
+
+        if old_minor_version < 3:
+            old_data.setdefault(
+                "available_time",
+                DEFAULT_AVAILABLE_TIME,
+            )
 
         return old_data
 

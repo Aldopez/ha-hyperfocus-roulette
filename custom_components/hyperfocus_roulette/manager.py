@@ -302,6 +302,7 @@ class HyperfocusManager:
         """Return all manager data in a JSON-compatible structure."""
 
         return {
+            "available_time": self.available_time,
             "projects": [
                 {
                     "project_id": project.project_id,
@@ -348,6 +349,8 @@ class HyperfocusManager:
         """Create a manager from previously serialized data."""
 
         manager = cls()
+
+        manager.available_time = data["available_time"]
 
         manager.projects = {
             project_data["project_id"]: HyperfocusProject(

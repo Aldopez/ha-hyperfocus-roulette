@@ -184,6 +184,8 @@ def test_manager_data_can_be_serialized_and_restored() -> None:
     selected_task = manager.draw()
     manager.accept()
 
+    manager.set_available_time(45)
+
     serialized_data = manager.to_dict()
 
     json_data = json.dumps(serialized_data)
@@ -191,6 +193,7 @@ def test_manager_data_can_be_serialized_and_restored() -> None:
 
     restored_manager = HyperfocusManager.from_dict(restored_data)
 
+    assert restored_manager.available_time == 45
     assert restored_manager.projects == manager.projects
     assert restored_manager.tasks == manager.tasks
     assert restored_manager.action_history == manager.action_history

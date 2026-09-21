@@ -65,6 +65,7 @@ async def test_storage_migrates_legacy_data(
 
     del legacy_data["current_task_id"]
     del legacy_data["action_history"]
+    del legacy_data["available_time"]
 
     legacy_store = Store[dict[str, Any]](
         hass,
@@ -85,6 +86,7 @@ async def test_storage_migrates_legacy_data(
         for task in restored_manager.tasks
     }
 
+    assert restored_manager.available_time == 30
     assert restored_task_ids == expected_task_ids
     assert restored_manager.current_task is None
     assert restored_manager.action_history == []
