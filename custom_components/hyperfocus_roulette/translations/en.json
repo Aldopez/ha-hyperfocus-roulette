@@ -99,6 +99,11 @@
         "name": "Complete"
       }
     },
+    "number": {
+      "available_time": {
+        "name": "Available time"
+      }
+    },
     "sensor": {
       "current_task": {
         "name": "Current task",

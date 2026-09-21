@@ -8,5 +8,6 @@ EVENT_TASK_SELECTED = f"{DOMAIN}_task_selected"
 
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
+    Platform.NUMBER,
     Platform.SENSOR,
 ]
