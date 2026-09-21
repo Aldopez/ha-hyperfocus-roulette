@@ -41,6 +41,7 @@ class HyperfocusButton(ButtonEntity):
 
         self._manager: HyperfocusManager = entry.runtime_data
         self._attr_unique_id = f"{entry.entry_id}_{action}"
+        self._last_available: bool | None = None
 
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
@@ -50,9 +51,11 @@ class HyperfocusButton(ButtonEntity):
         )
 
     async def async_added_to_hass(self) -> None:
-        """Register for manager updates."""
+        """Register for relevant manager updates."""
 
         await super().async_added_to_hass()
+
+        self._last_available = self.available
 
         self.async_on_remove(
             self._manager.add_listener(self._handle_manager_update)
@@ -60,8 +63,14 @@ class HyperfocusButton(ButtonEntity):
 
     @callback
     def _handle_manager_update(self) -> None:
-        """Write manager changes to Home Assistant."""
+        """Write state only when availability changes."""
 
+        is_available = self.available
+
+        if is_available == self._last_available:
+            return
+
+        self._last_available = is_available
         self.async_write_ha_state()
 
 

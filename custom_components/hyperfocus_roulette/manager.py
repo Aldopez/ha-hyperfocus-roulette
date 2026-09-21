@@ -408,10 +408,15 @@ class HyperfocusManager:
         self.available_time = minutes
         self._notify_listeners()
 
-    def draw(self) -> HyperfocusTask:
+    def draw(
+        self,
+        *,
+        excluded_task_id: str | None = None,
+    ) -> HyperfocusTask:
         """Select an available task without immediately repeating one."""
 
         previous_task = self.current_task
+        allow_repeat = excluded_task_id is None
 
         if (
             previous_task is not None
@@ -419,15 +424,22 @@ class HyperfocusManager:
         ):
             previous_task.status = TaskStatus.AVAILABLE
 
+        if excluded_task_id is None:
+            excluded_task_id = getattr(
+                previous_task,
+                "task_id",
+                None,
+            )
+
         available_tasks = [
             task
             for task in self.tasks
             if task.status is TaskStatus.AVAILABLE
             and task.duration <= self.available_time
-            and task.task_id != getattr(previous_task, "task_id", None)
+            and task.task_id != excluded_task_id
         ]
 
-        if not available_tasks:
+        if not available_tasks and allow_repeat:
             available_tasks = [
                 task
                 for task in self.tasks
@@ -475,7 +487,9 @@ class HyperfocusManager:
         self._record_action(TaskAction.SKIPPED, skipped_task)
 
         try:
-            return self.draw()
+            return self.draw(
+                excluded_task_id=skipped_task.task_id,
+            )
         except NoAvailableTasksError:
             return None
 

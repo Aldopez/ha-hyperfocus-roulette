@@ -117,20 +117,23 @@ def test_complete_finishes_active_task() -> None:
     assert completed_task.status is TaskStatus.FINISHED
 
 
-def test_three_omissions_block_last_available_task() -> None:
-    """Test that three omissions block a task without raising an error."""
+def test_three_manual_omissions_block_last_available_task() -> None:
+    """Test that three separate omissions block a task."""
 
     manager = HyperfocusManager()
     task = manager.tasks[0]
     manager.tasks = [task]
 
-    for _ in range(2):
+    for expected_count in range(1, 3):
         manager.draw()
-        next_task = manager.skip()
+        result = manager.skip()
 
-        assert next_task is task
-        assert task.status is TaskStatus.PROPOSED
+        assert result is None
+        assert task.status is TaskStatus.AVAILABLE
+        assert task.omission_count == expected_count
+        assert manager.current_task is None
 
+    manager.draw()
     result = manager.skip()
 
     assert result is None
@@ -359,3 +362,20 @@ def test_draw_fails_when_no_task_fits_available_time() -> None:
         manager.draw()
 
     assert manager.current_task is None
+
+
+def test_skip_does_not_immediately_repeat_only_matching_task() -> None:
+    """Test skipping when no different matching task exists."""
+
+    manager = HyperfocusManager()
+    task = manager.tasks[0]
+    manager.tasks = [task]
+
+    manager.draw()
+    result = manager.skip()
+
+    assert result is None
+    assert manager.current_task is None
+    assert task.status is TaskStatus.AVAILABLE
+    assert task.omission_count == 1
+    assert manager.has_available_tasks
