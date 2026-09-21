@@ -12,6 +12,7 @@ from custom_components.hyperfocus_roulette.manager import (
     TaskStatus,
     ProjectHasTasksError,
     CurrentTaskDeletionError,
+    NoAvailableTasksError,
 )
 
 
@@ -329,3 +330,29 @@ def test_current_proposed_or_active_task_cannot_be_deleted() -> None:
 
     with pytest.raises(CurrentTaskDeletionError):
         active_manager.delete_task(active_task.task_id)
+
+
+def test_draw_filters_tasks_by_available_time() -> None:
+    """Test that drawing excludes tasks that take too long."""
+
+    manager = HyperfocusManager()
+    manager.set_available_time(20)
+
+    selected_task = manager.draw()
+
+    assert selected_task.duration <= 20
+    assert selected_task.title == "Dibujar la etapa BC548–PWR_SW"
+
+
+def test_draw_fails_when_no_task_fits_available_time() -> None:
+    """Test drawing when no task fits the available time."""
+
+    manager = HyperfocusManager()
+    manager.set_available_time(10)
+
+    assert not manager.has_available_tasks
+
+    with pytest.raises(NoAvailableTasksError):
+        manager.draw()
+
+    assert manager.current_task is None

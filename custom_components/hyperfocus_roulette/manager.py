@@ -9,7 +9,7 @@ from uuid import uuid4
 
 
 MAX_OMISSIONS = 3
-
+DEFAULT_AVAILABLE_TIME = 30
 
 class TaskStatus(StrEnum):
     """Possible states in the lifecycle of a task."""
@@ -141,6 +141,7 @@ class HyperfocusManager:
 
         self.current_task: HyperfocusTask | None = None
         self.action_history: list[TaskActionResult] = []
+        self.available_time = DEFAULT_AVAILABLE_TIME
         self._action_listeners: set[
             Callable[[TaskActionResult], None]
         ] = set()
@@ -148,10 +149,11 @@ class HyperfocusManager:
 
     @property
     def has_available_tasks(self) -> bool:
-        """Return whether at least one task is available."""
+        """Return whether at least one task matches the current context."""
 
         return any(
             task.status is TaskStatus.AVAILABLE
+            and task.duration <= self.available_time
             for task in self.tasks
         )
 
@@ -394,6 +396,15 @@ class HyperfocusManager:
 
         return manager
 
+    def set_available_time(self, minutes: int) -> None:
+        """Set the maximum duration for selectable tasks."""
+
+        if minutes < 1:
+            raise ValueError("Available time must be positive")
+
+        self.available_time = minutes
+        self._notify_listeners()
+
     def draw(self) -> HyperfocusTask:
         """Select an available task without immediately repeating one."""
 
@@ -409,6 +420,7 @@ class HyperfocusManager:
             task
             for task in self.tasks
             if task.status is TaskStatus.AVAILABLE
+            and task.duration <= self.available_time
             and task.task_id != getattr(previous_task, "task_id", None)
         ]
 
@@ -417,6 +429,7 @@ class HyperfocusManager:
                 task
                 for task in self.tasks
                 if task.status is TaskStatus.AVAILABLE
+                and task.duration <= self.available_time
             ]
 
         if not available_tasks:
