@@ -52,35 +52,36 @@
           "title": "Tarea",
           "duration": "Duración en minutos"
         }
-      }
-    },
-"update_task": {
-      "title": "Elegir tarea para editar",
-      "data": {
-        "task_id": "Tarea"
-      }
-    },
-    "edit_task": {
-      "title": "Editar tarea",
-      "data": {
-        "project_id": "Proyecto",
-        "title": "Tarea",
-        "duration": "Duración en minutos"
-      }
-    },
-    "delete_task": {
-      "title": "Eliminar tarea",
-      "description": "No puede eliminarse una tarea que esté actualmente propuesta o activa.",
-      "data": {
-        "task_id": "Tarea",
-        "confirm": "Confirmar eliminación"
+      },
+      "update_task": {
+        "title": "Elegir tarea para editar",
+        "data": {
+          "task_id": "Tarea"
+        }
+      },
+      "edit_task": {
+        "title": "Editar tarea",
+        "data": {
+          "project_id": "Proyecto",
+          "title": "Tarea",
+          "duration": "Duración en minutos"
+        }
+      },
+      "delete_task": {
+        "title": "Eliminar tarea",
+        "description": "No puede eliminarse una tarea que esté actualmente propuesta o activa.",
+        "data": {
+          "task_id": "Tarea",
+          "confirm": "Confirmar eliminación"
+        }
       }
     },
     "error": {
       "empty_name": "El nombre del proyecto no puede estar vacío.",
       "confirmation_required": "Debes confirmar la eliminación.",
       "project_has_tasks": "El proyecto no puede eliminarse porque contiene tareas.",
-      "empty_title": "La descripción de la tarea no puede estar vacía."
+      "empty_title": "La descripción de la tarea no puede estar vacía.",
+      "current_task": "La tarea no puede eliminarse porque está actualmente propuesta o activa."
     }
   },
   "entity": {
