@@ -4,7 +4,7 @@ Integración personalizada para Home Assistant que selecciona una próxima tarea
 
 La idea nació como una automatización innecesaria y rápidamente se convirtió en otro proyecto del backlog.
 
-> Estado: desarrollo experimental — versión 0.4 completada.
+> Estado: desarrollo experimental — versión 0.5 en desarrollo.
 
 ## Objetivo
 
@@ -36,6 +36,7 @@ La integración permite sortear, aceptar, omitir y completar una tarea. Una tare
 - Proyectos y tareas persistentes con identificadores UUID estables.
 - Administración de proyectos y tareas desde la interfaz.
 - Migración automática del formato de almacenamiento.
+- Selección de tareas según el tiempo disponible.
 
 Los datos se almacenan mediante `Store` y se restauran después de reiniciar Home Assistant.
 
@@ -112,7 +113,7 @@ ha core restart
 
 ### 0.5 — Selección contextual
 
-- [ ] Filtrar por tiempo disponible.
+- [x] Filtrar por tiempo disponible.
 - [ ] Filtrar por energía.
 - [ ] Filtrar por ubicación.
 - [ ] Agregar modos **Avanzar** y **Estoy aburrido**.
