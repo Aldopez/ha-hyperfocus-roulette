@@ -259,6 +259,7 @@ class HyperfocusManager:
         project_id: str,
         title: str,
         duration: int,
+        energy: EnergyLevel = EnergyLevel.MEDIUM,
     ) -> HyperfocusTask:
         """Create a task."""
 
@@ -269,6 +270,7 @@ class HyperfocusManager:
             project_id=project_id,
             title=title,
             duration=duration,
+            energy=energy,
         )
 
         self.tasks.append(task)
@@ -282,6 +284,7 @@ class HyperfocusManager:
         project_id: str,
         title: str,
         duration: int,
+        energy: EnergyLevel = EnergyLevel.MEDIUM,
     ) -> HyperfocusTask:
         """Update an existing task."""
 
@@ -292,6 +295,7 @@ class HyperfocusManager:
         task.project_id = project_id
         task.title = title
         task.duration = duration
+        task.energy = energy
 
         self._notify_listeners()
 

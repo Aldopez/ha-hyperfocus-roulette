@@ -7,6 +7,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.hyperfocus_roulette.const import DOMAIN
 from custom_components.hyperfocus_roulette.manager import (
     HyperfocusManager,
+    EnergyLevel,
 )
 
 
@@ -201,6 +202,7 @@ async def test_options_flow_can_add_task(
             "project_id": project.project_id,
             "title": "Comprar MOSFET logic-level",
             "duration": 20,
+            "energy": EnergyLevel.HIGH.value,
         },
     )
 
@@ -219,7 +221,7 @@ async def test_options_flow_can_add_task(
     assert new_task.project_id == project.project_id
     assert new_task.title == "Comprar MOSFET logic-level"
     assert new_task.duration == 20
-
+    assert new_task.energy is EnergyLevel.HIGH
 
 async def test_options_flow_can_update_task(
     hass: HomeAssistant,
@@ -257,6 +259,7 @@ async def test_options_flow_can_update_task(
             "project_id": destination_project.project_id,
             "title": "Tarea actualizada",
             "duration": 45,
+            "energy": EnergyLevel.LOW.value,
         },
     )
 
@@ -264,6 +267,7 @@ async def test_options_flow_can_update_task(
     assert task.project_id == destination_project.project_id
     assert task.title == "Tarea actualizada"
     assert task.duration == 45
+    assert task.energy is EnergyLevel.LOW
 
 
 async def test_options_flow_can_delete_task(

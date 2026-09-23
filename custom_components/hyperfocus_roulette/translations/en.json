@@ -11,6 +11,15 @@
       "single_instance_allowed": "Only one Hyperfocus Roulette instance can be configured."
     }
   },
+  "selector": {
+    "energy": {
+      "options": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    }
+  },
   "options": {
     "step": {
       "init": {
@@ -50,7 +59,8 @@
         "data": {
           "project_id": "Project",
           "title": "Task",
-          "duration": "Duration in minutes"
+          "duration": "Duration in minutes",
+          "energy": "Required energy"
         }
       },
       "update_task": {
@@ -64,7 +74,8 @@
         "data": {
           "project_id": "Project",
           "title": "Task",
-          "duration": "Duration in minutes"
+          "duration": "Duration in minutes",
+          "energy": "Required energy"
         }
       },
       "delete_task": {

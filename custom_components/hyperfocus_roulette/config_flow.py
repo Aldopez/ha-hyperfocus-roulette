@@ -12,11 +12,29 @@ from homeassistant.config_entries import (
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 
+from homeassistant.helpers.selector import (
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+)
+
 from .const import DOMAIN
 from .manager import (
     CurrentTaskDeletionError,
     HyperfocusManager,
     ProjectHasTasksError,
+    EnergyLevel,
+)
+
+ENERGY_SELECTOR = SelectSelector(
+    SelectSelectorConfig(
+        options=[
+            energy.value
+            for energy in EnergyLevel
+        ],
+        translation_key="energy",
+        mode=SelectSelectorMode.DROPDOWN,
+    )
 )
 
 class HyperfocusRouletteConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -225,6 +243,7 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
                     project_id=user_input["project_id"],
                     title=title,
                     duration=user_input["duration"],
+                    energy=EnergyLevel(user_input["energy"]),
                 )
 
                 return self.async_create_entry(
@@ -334,6 +353,10 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
                         int,
                         vol.Range(min=1),
                     ),
+                    vol.Required(
+                        "energy",
+                        default=task.energy.value,
+                    ): ENERGY_SELECTOR,
                 }
             ),
             errors=errors,

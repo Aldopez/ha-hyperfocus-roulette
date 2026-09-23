@@ -11,6 +11,15 @@
       "single_instance_allowed": "Solo puede configurarse una instancia de Ruleta del Hiperfoco."
     }
   },
+  "selector": {
+    "energy": {
+      "options": {
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta"
+      }
+    }
+  },
   "options": {
     "step": {
       "init": {
@@ -50,7 +59,8 @@
         "data": {
           "project_id": "Proyecto",
           "title": "Tarea",
-          "duration": "Duración en minutos"
+          "duration": "Duración en minutos",
+          "energy": "Energía requerida"
         }
       },
       "update_task": {
@@ -64,7 +74,8 @@
         "data": {
           "project_id": "Proyecto",
           "title": "Tarea",
-          "duration": "Duración en minutos"
+          "duration": "Duración en minutos",
+          "energy": "Energía requerida"
         }
       },
       "delete_task": {
