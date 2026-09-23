@@ -7,13 +7,15 @@ from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN
 from .manager import (
+    DEFAULT_AVAILABLE_ENERGY,
     DEFAULT_AVAILABLE_TIME,
-    HyperfocusManager
+    EnergyLevel,
+    HyperfocusManager,
 )
 
 
 STORAGE_VERSION = 1
-STORAGE_MINOR_VERSION = 3
+STORAGE_MINOR_VERSION = 4
 STORAGE_KEY = f"{DOMAIN}.data"
 STORAGE_SAVE_DELAY = 1.0
 
@@ -45,6 +47,18 @@ class HyperfocusStore(Store[dict[str, Any]]):
                 "available_time",
                 DEFAULT_AVAILABLE_TIME,
             )
+
+        if old_minor_version < 4:
+            old_data.setdefault(
+                "available_energy",
+                DEFAULT_AVAILABLE_ENERGY.value,
+            )
+
+            for task_data in old_data.get("tasks", []):
+                task_data.setdefault(
+                    "energy",
+                    EnergyLevel.MEDIUM.value,
+                )
 
         return old_data
 

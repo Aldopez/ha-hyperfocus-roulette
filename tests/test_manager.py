@@ -190,6 +190,9 @@ def test_manager_data_can_be_serialized_and_restored() -> None:
 
     manager.set_available_time(45)
 
+    manager.set_available_energy(EnergyLevel.LOW)
+    manager.tasks[0].energy = EnergyLevel.HIGH
+
     serialized_data = manager.to_dict()
 
     json_data = json.dumps(serialized_data)
@@ -198,6 +201,8 @@ def test_manager_data_can_be_serialized_and_restored() -> None:
     restored_manager = HyperfocusManager.from_dict(restored_data)
 
     assert restored_manager.available_time == 45
+    assert restored_manager.available_energy is EnergyLevel.LOW
+    assert restored_manager.tasks[0].energy is EnergyLevel.HIGH
     assert restored_manager.projects == manager.projects
     assert restored_manager.tasks == manager.tasks
     assert restored_manager.action_history == manager.action_history

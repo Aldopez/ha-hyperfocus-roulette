@@ -9,6 +9,7 @@ from custom_components.hyperfocus_roulette.manager import (
     HyperfocusManager,
     TaskAction,
     TaskStatus,
+    EnergyLevel,
 )
 from custom_components.hyperfocus_roulette.storage import (
     STORAGE_KEY,
@@ -62,10 +63,12 @@ async def test_storage_migrates_legacy_data(
     for task_data in legacy_data["tasks"]:
         del task_data["status"]
         del task_data["omission_count"]
+        del task_data["energy"]
 
     del legacy_data["current_task_id"]
     del legacy_data["action_history"]
     del legacy_data["available_time"]
+    del legacy_data["available_energy"]
 
     legacy_store = Store[dict[str, Any]](
         hass,
@@ -90,7 +93,9 @@ async def test_storage_migrates_legacy_data(
     assert restored_task_ids == expected_task_ids
     assert restored_manager.current_task is None
     assert restored_manager.action_history == []
-
+    assert restored_manager.available_energy is EnergyLevel.MEDIUM
+    
     for task in restored_manager.tasks:
         assert task.status is TaskStatus.AVAILABLE
         assert task.omission_count == 0
+        assert task.energy is EnergyLevel.MEDIUM

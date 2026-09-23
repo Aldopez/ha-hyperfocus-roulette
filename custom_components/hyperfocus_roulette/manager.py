@@ -328,6 +328,7 @@ class HyperfocusManager:
 
         return {
             "available_time": self.available_time,
+            "available_energy": self.available_energy.value,
             "projects": [
                 {
                     "project_id": project.project_id,
@@ -341,6 +342,7 @@ class HyperfocusManager:
                     "project_id": task.project_id,
                     "title": task.title,
                     "duration": task.duration,
+                    "energy": task.energy.value,
                     "status": task.status.value,
                     "omission_count": task.omission_count,
                 }
@@ -377,6 +379,13 @@ class HyperfocusManager:
 
         manager.available_time = data["available_time"]
 
+        manager.available_energy = EnergyLevel(
+            data.get(
+                "available_energy",
+                DEFAULT_AVAILABLE_ENERGY.value,
+            )
+        )
+
         manager.projects = {
             project_data["project_id"]: HyperfocusProject(
                 project_id=project_data["project_id"],
@@ -391,6 +400,12 @@ class HyperfocusManager:
                 project_id=task_data["project_id"],
                 title=task_data["title"],
                 duration=task_data["duration"],
+                energy=EnergyLevel(
+                    task_data.get(
+                        "energy",
+                        EnergyLevel.MEDIUM.value,
+                    )
+                ),
                 status=TaskStatus(task_data["status"]),
                 omission_count=task_data["omission_count"],
             )
