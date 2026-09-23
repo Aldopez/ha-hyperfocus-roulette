@@ -272,6 +272,10 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
                         int,
                         vol.Range(min=1),
                     ),
+                    vol.Required(
+                        "energy",
+                        default=EnergyLevel.MEDIUM.value,
+                    ): ENERGY_SELECTOR,
                 }
             ),
             errors=errors,
@@ -319,6 +323,7 @@ class HyperfocusRouletteOptionsFlow(OptionsFlow):
                     project_id=user_input["project_id"],
                     title=title,
                     duration=user_input["duration"],
+                    energy=EnergyLevel(user_input["energy"]),
                 )
 
                 return self.async_create_entry(
