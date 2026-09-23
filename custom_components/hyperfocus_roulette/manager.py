@@ -20,6 +20,20 @@ class TaskStatus(StrEnum):
     BLOCKED = "blocked"
     FINISHED = "finished"
 
+class EnergyLevel(StrEnum):
+    """Possible energy levels for tasks and the current context."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+DEFAULT_AVAILABLE_ENERGY = EnergyLevel.MEDIUM
+
+ENERGY_RANK: dict[EnergyLevel, int] = {
+    EnergyLevel.LOW: 1,
+    EnergyLevel.MEDIUM: 2,
+    EnergyLevel.HIGH: 3,
+}
 
 class TaskAction(StrEnum):
     """Actions that can be performed on a task."""
@@ -69,6 +83,7 @@ class HyperfocusTask:
     project_id: str
     title: str
     duration: int
+    energy: EnergyLevel = EnergyLevel.MEDIUM
     status: TaskStatus = TaskStatus.AVAILABLE
     omission_count: int = 0
 
@@ -142,18 +157,28 @@ class HyperfocusManager:
         self.current_task: HyperfocusTask | None = None
         self.action_history: list[TaskActionResult] = []
         self.available_time = DEFAULT_AVAILABLE_TIME
+        self.available_energy = DEFAULT_AVAILABLE_ENERGY
         self._action_listeners: set[
             Callable[[TaskActionResult], None]
         ] = set()
         self._listeners: set[Callable[[], None]] = set()
+
+    def _matches_context(self, task: HyperfocusTask) -> bool:
+        """Return whether a task matches the current context."""
+
+        return (
+            task.status is TaskStatus.AVAILABLE
+            and task.duration <= self.available_time
+            and ENERGY_RANK[task.energy]
+            <= ENERGY_RANK[self.available_energy]
+        )
 
     @property
     def has_available_tasks(self) -> bool:
         """Return whether at least one task matches the current context."""
 
         return any(
-            task.status is TaskStatus.AVAILABLE
-            and task.duration <= self.available_time
+            self._matches_context(task)
             for task in self.tasks
         )
 
@@ -408,6 +433,15 @@ class HyperfocusManager:
         self.available_time = minutes
         self._notify_listeners()
 
+    def set_available_energy(
+        self,
+        energy: EnergyLevel,
+    ) -> None:
+        """Set the maximum energy available for selectable tasks."""
+
+        self.available_energy = energy
+        self._notify_listeners()
+
     def draw(
         self,
         *,
@@ -434,8 +468,7 @@ class HyperfocusManager:
         available_tasks = [
             task
             for task in self.tasks
-            if task.status is TaskStatus.AVAILABLE
-            and task.duration <= self.available_time
+            if self._matches_context(task)
             and task.task_id != excluded_task_id
         ]
 
@@ -443,8 +476,7 @@ class HyperfocusManager:
             available_tasks = [
                 task
                 for task in self.tasks
-                if task.status is TaskStatus.AVAILABLE
-                and task.duration <= self.available_time
+                if self._matches_context(task)
             ]
 
         if not available_tasks:

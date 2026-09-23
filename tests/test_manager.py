@@ -7,12 +7,13 @@ from uuid import UUID
 import pytest
 
 from custom_components.hyperfocus_roulette.manager import (
+    CurrentTaskDeletionError,
+    EnergyLevel,
     HyperfocusManager,
+    NoAvailableTasksError,
+    ProjectHasTasksError,
     TaskAction,
     TaskStatus,
-    ProjectHasTasksError,
-    CurrentTaskDeletionError,
-    NoAvailableTasksError,
 )
 
 
@@ -379,3 +380,61 @@ def test_skip_does_not_immediately_repeat_only_matching_task() -> None:
     assert task.status is TaskStatus.AVAILABLE
     assert task.omission_count == 1
     assert manager.has_available_tasks
+
+
+def test_draw_filters_tasks_by_available_energy() -> None:
+    """Test that drawing excludes tasks requiring too much energy."""
+
+    manager = HyperfocusManager()
+    manager.set_available_time(180)
+
+    manager.tasks[0].energy = EnergyLevel.LOW
+    manager.tasks[1].energy = EnergyLevel.MEDIUM
+    manager.tasks[2].energy = EnergyLevel.HIGH
+
+    manager.set_available_energy(EnergyLevel.LOW)
+
+    selected_task = manager.draw()
+
+    assert selected_task is manager.tasks[0]
+    assert selected_task.energy is EnergyLevel.LOW
+
+
+def test_medium_energy_excludes_high_energy_tasks() -> None:
+    """Test that medium energy accepts low and medium tasks."""
+
+    manager = HyperfocusManager()
+    manager.set_available_time(180)
+
+    manager.tasks[0].energy = EnergyLevel.LOW
+    manager.tasks[1].energy = EnergyLevel.MEDIUM
+    manager.tasks[2].energy = EnergyLevel.HIGH
+
+    manager.set_available_energy(EnergyLevel.MEDIUM)
+
+    for _ in range(20):
+        selected_task = manager.draw()
+
+        assert selected_task.energy in {
+            EnergyLevel.LOW,
+            EnergyLevel.MEDIUM,
+        }
+
+
+def test_draw_fails_when_no_task_matches_available_energy() -> None:
+    """Test drawing when every task requires too much energy."""
+
+    manager = HyperfocusManager()
+    manager.set_available_time(180)
+
+    for task in manager.tasks:
+        task.energy = EnergyLevel.HIGH
+
+    manager.set_available_energy(EnergyLevel.LOW)
+
+    assert not manager.has_available_tasks
+
+    with pytest.raises(NoAvailableTasksError):
+        manager.draw()
+
+    assert manager.current_task is None
